@@ -8,18 +8,18 @@ import { IoExitOutline } from "react-icons/io5";
 
 const Navbar = () => {
     return (
-        <div className=" h-screen min-w-[200px] p-4">
-            <div className="p-2 w-2/3 flex flex-col items-center justify-between h-full bg-black rounded-md shadow-lg shadow-black">
+        <div className="flexs lg:h-screen min-w-[200px] p-3">
+            <div className="p-2 w-2/3 flex flex-row lg:flex-col items-center justify-between h-full bg-black rounded-2xl shadow-2xl shadow-black">
                 <div className="basis-1/4 flex flex-col justify-center">
                     logo
                 </div>
-                <div className="basis-3/4 grow flex flex-col items-center justify-around">
+                <div className="basis-3/4 grow flex flex-row lg:flex-col items-center justify-around">
                     <Icon label="Home" href={"/"} IconName={GoHome}/>
                     <Icon label="Explore Courses" href={"/explore"} IconName={FaGoogleScholar}/>
                     <Icon label="Profile" href={"/profile"} IconName={CgProfile}/>
                     <Icon label="Settings" href={"/settings"} IconName={IoSettingsOutline}/>
                 </div>
-                <div className="p-3 basis-1/4 flex flex-col justify-end">
+                <div className="p-3 basis-1/4 flex lg:flex-col justify-end">
                     <Icon label="Logout" href={"/logout"} IconName={IoExitOutline}/>
                 </div>
             </div>
