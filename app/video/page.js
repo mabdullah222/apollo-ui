@@ -1,35 +1,29 @@
 import React from 'react'
+import VideoPlayer from "@/components/videoplayer"
+import SlidesGenerator from '@/components/slides-generator';
+import AskQuestion from '@/components/ask-question';
 
 const VideoPage = () => {
-  return (
-    <div className="w-[calc(100vw)] bg-pink-200 flex flex-col p-3">
-        <h1 className="text-black text-2xl font-bold mb-4">Topic Name</h1>
-
+    return (
+      <div className="w-full min-h-screen flex flex-col p-6">
+        <h1 className="text-black text-2xl font-bold mb-6">Topic Name</h1>
+  
         {/* Slides and Video Frames */}
-
-        <div className='flex flex-col bg-yellow-200 p-2 rounded-sm w-max'>
-            <h1 className="text-black text-2xl font-bold mb-4">Slides</h1>
-
-            <div className='flex gap-2'>
-
-                <video controls width="600">
-                    <source src="/sample-video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-
-                <video controls width="ascpect-square" >
-                    <source src="/sample-video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-
-            </div>
-
+        <div className="flex flex-col bg-yellow-200 p-4 rounded-lg w-full">
+          <h2 className="text-black text-xl font-bold mb-4">Slides</h2>
+          <div className="flex gap-4 justify-center w-full">
+            <SlidesGenerator />
+            <VideoPlayer src="/sample-video.mp4" />
+          </div>
         </div>
 
+        {/* Ask Question Section */}
+        <AskQuestion />
 
-    </div>
-  )
-}
 
-export default VideoPage
-
+      </div>
+    );
+  };
+  
+  export default VideoPage;
+  
