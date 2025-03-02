@@ -22,13 +22,13 @@ const SlidesGenerator = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-full p-2 bg-amber-100 rounded-lg'>
-        <div className='w-full h-3/4 bg-white p-6 rounded-lg shadow-lg text-center'>
+    <div className='flex flex-col items-center justify-center w-full h-full p-2 bg-gray-100 rounded-lg'>
+        <div className='w-full h-3/4 bg-white p-6 rounded-lg border border-gray-300 text-center'>
             <h2 className='text-xl font-bold mb-2'>{slides[currentIndex].heading}</h2>
             <p className='text-gray-700'>{slides[currentIndex].text}</p>
         </div>
         {/* buttons theek hony mein time lagta hai boss */}
-        <div className="flex justify-between w-full mt-4 p-4 items-center">
+        <div className="flex justify-between w-full mt-1 p-4 items-center">
 
             <Button
                 onClick={prevSlide}
@@ -39,7 +39,7 @@ const SlidesGenerator = () => {
                 <ChevronLeft className="w-6 h-6" />
             </Button>
 
-            <h2 className=" bg-amber-50 w-1/2 p-2 text-xl font-bold text-black text-center rounded-lg">{slides[currentIndex].heading}</h2>
+            <h2 className=" bg-white border border-gray-300 w-1/2 p-2 text-xl font-bold text-black text-center rounded-lg">{slides[currentIndex].heading}</h2>
 
             <Button
                 onClick={nextSlide}
