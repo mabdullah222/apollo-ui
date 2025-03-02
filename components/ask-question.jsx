@@ -41,7 +41,7 @@ const AskQuestion = () => {
           onKeyDown={(e) => e.key === "Enter" && handleAskQuestion()} // Handle Enter key
           className="flex-1 p-2 border rounded-lg text-black"
         />
-        <Button variant="outline" size="icon" onClick={handleAskQuestion} disabled={loading}>
+        <Button variant="outline" size="icon" onClick={handleAskQuestion} disabled={loading} className="cursor-pointer">
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5 text-black" />}
         </Button>
       </div>
