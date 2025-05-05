@@ -1,28 +1,67 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CourseList from "@/components/course-list";
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import GenerateTopicModal from "@/components/generate-topic-modal";
 import CourseCard from "@/components/course-card";
-
-const courses = [
-  { name: "Introduction to Web Development", author: "John Doe", duration: "10 hours" },
-  { name: "Mastering JavaScript", author: "Jane Smith", duration: "15 hours" },
-  { name: "Python for Beginners", author: "Michael Johnson", duration: "8 hours" },
-  { name: "Data Structures & Algorithms", author: "Emily Brown", duration: "20 hours" },
-  { name: "Machine Learning Fundamentals", author: "Chris Wilson", duration: "25 hours" },
-  { name: "React.js Crash Course", author: "Sarah Lee", duration: "12 hours" },
-  { name: "Building APIs with Node.js", author: "David Kim", duration: "18 hours" },
-  { name: "Cybersecurity Essentials", author: "Sophia Martinez", duration: "22 hours" },
-  { name: "Cloud Computing with AWS", author: "James Anderson", duration: "16 hours" },
-  { name: "UI/UX Design Principles", author: "Olivia Thomas", duration: "14 hours" },
-];
+import { toast } from "sonner";
 
 const ExplorePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [filteredLectures, setFilteredLectures] = useState([]);
+  const [allLectures, setAllLectures] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch all lectures on component mount
+  useEffect(() => {
+    const fetchLectures = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lectures`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch lectures: ${response.status}`);
+        }
+        const data = await response.json();
+        setAllLectures(data);
+      } catch (err) {
+        console.error('Error fetching lectures:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLectures();
+  }, []);
+
+  const handleSearchResults = (results) => {
+    setFilteredLectures(results);
+  };
+
+  const refreshLectures = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/lectures');
+      if (!response.ok) {
+        throw new Error(`Failed to refresh lectures: ${response.status}`);
+      }
+      const data = await response.json();
+      setAllLectures(data);
+    } catch (err) {
+      console.error('Error refreshing lectures:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🟡 Toast function to pass into modal
+  const handleLectureQueued = () => {
+    toast.success("Lecture has been queued. It will appear shortly.");
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col p-6">
@@ -38,19 +77,24 @@ const ExplorePage = () => {
       </div>
 
       {/* Search Bar */}
-      <SearchBar onSearchResults={setFilteredCourses} />
+      <SearchBar onSearchResults={handleSearchResults} lectures={allLectures} />
 
-      {/* Conditionally Render "Courses Found" Section */}
-      {filteredCourses.length > 0 && (
+      {loading && <div className="text-center py-4">Loading lectures...</div>}
+      {error && <div className="text-center py-4 text-red-500">Error: {error}</div>}
+
+      {filteredLectures.length > 0 && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold text-black mb-4">Courses Found</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {filteredCourses.map((course, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredLectures.map((lecture) => (
               <CourseCard
-                key={index}
-                name={course.name}
-                writer={course.author}
-                duration={course.duration}
+                key={lecture.lecture_id}
+                id={lecture.lecture_id}
+                name={lecture.data?.topic || 'Untitled Lecture'}
+                writer={lecture.data?.subject || 'Unknown Subject'}
+                duration={lecture.data?.grade_level || 'N/A'}
+                status={lecture.status}
+                progress={lecture.progress}
               />
             ))}
           </div>
@@ -58,11 +102,15 @@ const ExplorePage = () => {
         </div>
       )}
 
-      {/* General Course List */}
-      <CourseList />
-      
+      <CourseList lectures={allLectures} loading={loading} error={error} />
+
       {/* Modal */}
-      <GenerateTopicModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <GenerateTopicModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={refreshLectures}
+        onQueued={handleLectureQueued} // ⬅️ Pass toast trigger
+      />
     </div>
   );
 };

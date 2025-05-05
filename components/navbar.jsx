@@ -10,8 +10,8 @@ const Navbar = () => {
     return (
         <div className="flexs lg:h-screen min-w-[200px] p-3">
             <div className="p-2 w-2/3 flex flex-row lg:flex-col items-center justify-between h-full bg-black rounded-2xl shadow-2xl shadow-black">
-                <div className="basis-1/4 flex flex-col justify-center">
-                    logo
+                <div className="flex flex-row justify-center items-center basis-1/4 font-extrabold">
+                    <span className='font-extrabold text-5xl'>.</span><span>Apollo</span>
                 </div>
                 <div className="basis-3/4 grow flex flex-row lg:flex-col items-center justify-around">
                     <Icon label="Home" href={"/"} IconName={GoHome}/>
