@@ -1,58 +1,76 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const slides = [
-  { heading: "Slide 1", text: "This is the first slide content." },
-  { heading: "Slide 2", text: "This is the second slide content." },
-  { heading: "Slide 3", text: "This is the third slide content." },
-];
+const SlidesGenerator = ({ slides = [] }) => {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  
+  // If no slides are provided, show a placeholder
+  if (!slides || slides.length === 0) {
+    return (
+      <Card className="flex flex-col justify-center items-center w-1/2 h-96 shadow-md rounded-2xl">
+        <CardContent className="pt-6 text-center space-y-2">
+          <h3 className="text-xl font-semibold mb-2">No Slides Available</h3>
+          <p className="text-gray-500">This lecture doesn't have any slides yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
-const SlidesGenerator = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentSlide = slides[currentSlideIndex];
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+  const goToPreviousSlide = () => {
+    setCurrentSlideIndex((prev) => (prev > 0 ? prev - 1 : prev));
   };
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + slides.length) % slides.length);
+  const goToNextSlide = () => {
+    setCurrentSlideIndex((prev) => (prev < slides.length - 1 ? prev + 1 : prev));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-2 bg-gray-100 rounded-lg flex-1">
-      <div className="w-full h-full bg-white p-6 rounded-lg border border-gray-300 text-center flex flex-col justify-center">
-        <h2 className="text-xl font-bold mb-2">{slides[currentIndex].heading}</h2>
-        <p className="text-gray-700">{slides[currentIndex].text}</p>
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between w-full mt-1 p-4 items-center">
-        <Button
-          onClick={prevSlide}
-          variant="outline"
-          size="icon"
-          className="bg-black text-white hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </Button>
-
-        <h2 className="bg-white border border-gray-300 w-1/2 p-2 text-xl font-bold text-black text-center rounded-lg">
-          {slides[currentIndex].heading}
-        </h2>
-
-        <Button
-          onClick={nextSlide}
-          variant="outline"
-          size="icon"
-          className="bg-black text-white hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </Button>
-      </div>
-    </div>
+    <Card className="flex flex-col w-full h-full shadow-md rounded-2xl">
+      <CardContent className="pt-6 pb-4 px-6 flex flex-col h-full">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">{currentSlide.title}</h3>
+          <div className="text-sm text-gray-500">
+            Slide {currentSlideIndex + 1} of {slides.length}
+          </div>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto mb-4 p-2 bg-white rounded-md">
+          <div className="whitespace-pre-wrap text-justify text-gray-700">{currentSlide.content}</div>
+          
+          {currentSlide.code && (
+            <div className="mt-4 bg-gray-100 p-4 rounded-md overflow-x-auto border border-gray-200">
+              <pre className="text-sm text-gray-800"><code>{currentSlide.code}</code></pre>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex justify-between items-center mt-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={goToPreviousSlide}
+            disabled={currentSlideIndex === 0}
+            className="gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" /> Previous
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={goToNextSlide}
+            disabled={currentSlideIndex === slides.length - 1}
+            className="gap-1"
+          >
+            Next <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

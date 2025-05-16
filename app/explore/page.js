@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import CourseList from "@/components/course-list";
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import GenerateTopicModal from "@/components/generate-topic-modal";
 import CourseCard from "@/components/course-card";
+import CourseScroll from "@/components/course-scroll";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 
 const ExplorePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,18 +15,21 @@ const ExplorePage = () => {
   const [allLectures, setAllLectures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showUserLectures, setShowUserLectures] = useState(false);
+  const { userId } = useAuth();
 
   // Fetch all lectures on component mount
   useEffect(() => {
     const fetchLectures = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lectures`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lectures`);
         if (!response.ok) {
           throw new Error(`Failed to fetch lectures: ${response.status}`);
         }
         const data = await response.json();
         setAllLectures(data);
+        console.log(data);
       } catch (err) {
         console.error('Error fetching lectures:', err);
         setError(err.message);
@@ -40,16 +44,17 @@ const ExplorePage = () => {
   const handleSearchResults = (results) => {
     setFilteredLectures(results);
   };
-
+  
   const refreshLectures = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/lectures');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lectures`);
       if (!response.ok) {
         throw new Error(`Failed to refresh lectures: ${response.status}`);
       }
       const data = await response.json();
       setAllLectures(data);
+      console.log(data);
     } catch (err) {
       console.error('Error refreshing lectures:', err);
       setError(err.message);
@@ -58,7 +63,7 @@ const ExplorePage = () => {
     }
   };
 
-  // 🟡 Toast function to pass into modal
+  // Toast function to pass into modal
   const handleLectureQueued = () => {
     toast.success("Lecture has been queued. It will appear shortly.");
   };
@@ -78,9 +83,6 @@ const ExplorePage = () => {
 
       {/* Search Bar */}
       <SearchBar onSearchResults={handleSearchResults} lectures={allLectures} />
-
-      {loading && <div className="text-center py-4">Loading lectures...</div>}
-      {error && <div className="text-center py-4 text-red-500">Error: {error}</div>}
 
       {filteredLectures.length > 0 && (
         <div className="mt-6">
@@ -102,14 +104,27 @@ const ExplorePage = () => {
         </div>
       )}
 
-      <CourseList lectures={allLectures} loading={loading} error={error} />
+      {/* CourseScroll with toggle functionality */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold text-black mb-4">
+          {showUserLectures ? "My Courses" : "All Available Courses"}
+        </h2>
+        <CourseScroll 
+          lectures={allLectures} 
+          loading={loading} 
+          error={error}
+          showUserLectures={showUserLectures}
+          onToggleUserLectures={() => setShowUserLectures(prev => !prev)}
+          userClerkId={userId}
+        />
+      </div>
 
       {/* Modal */}
       <GenerateTopicModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSuccess={refreshLectures}
-        onQueued={handleLectureQueued} // ⬅️ Pass toast trigger
+        onQueued={handleLectureQueued}
       />
     </div>
   );

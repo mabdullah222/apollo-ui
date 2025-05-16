@@ -12,11 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from 'next/navigation';
+import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 
 const GenerateTopicModal = ({ isOpen, onClose, onSuccess, onQueued }) => {
-  const router = useRouter();
+  const { userId } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lectureData, setLectureData] = useState({
@@ -35,47 +35,55 @@ const GenerateTopicModal = ({ isOpen, onClose, onSuccess, onQueued }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form submission from reloading the page
-  
-    // Close the modal immediately
-    if (onClose) {
-      onClose();
-    }
-  
-    // Notify parent component to display the toast
-    if (onQueued) {
-      onQueued();
-    }
-  
+    e.preventDefault();
+    
     try {
       setLoading(true);
-  
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/generate-lecture`, {
+      
+      if (onClose) {
+        onClose();
+      }
+      
+      toast.info("Starting lecture generation. This may take up to 15 minutes.");
+      
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generate-lecture`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          subject: lectureData.subject,
           topic: lectureData.topic,
-          gradeLevel: lectureData.grade_level,
-          lectureType: lectureData.lecture_type,
-          additionalContext: lectureData.additional_context,
+          clerkUserId: userId,
         }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to generate lecture");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Lecture generation response:", data);
+        toast.success("Lecture generation completed successfully!");
+        
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        if (onQueued) {
+          onQueued();
+        }
+      })
+      .catch(err => {
+        console.error("Error generating lecture:", err);
+        toast.error("Failed to generate lecture. Please try again.");
+        setError(err.message);
       });
-  
-      if (!response.ok) {
-        throw new Error("Failed to generate lecture");
-      }
-  
-      // Notify success (optional, as the toast is already shown via `onQueued`)
-      if (onSuccess) {
-        onSuccess();
-      }
+      
     } catch (err) {
-      console.error("Error generating lecture:", err);
-      toast.error("Failed to generate lecture.");
-    } finally {
+      console.error("Error submitting form:", err);
+      toast.error("Failed to submit the form. Please try again.");
+      setError(err.message);
       setLoading(false);
     }
   };
@@ -119,6 +127,7 @@ const GenerateTopicModal = ({ isOpen, onClose, onSuccess, onQueued }) => {
               <Select 
                 value={lectureData.grade_level} 
                 onValueChange={(value) => handleChange('grade_level', value)}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a grade level" />

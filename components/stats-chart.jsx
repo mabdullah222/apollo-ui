@@ -56,12 +56,12 @@ export default function StatsChart() {
       </CardHeader>
       <CardContent>
         <Select onValueChange={setTimeframe} defaultValue={timeframe}>
-          <SelectTrigger className="w-48 mb-4">
+          <SelectTrigger className="w-48 mb-4 cursor-pointer">
             <SelectValue placeholder="Select timeframe" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
+          <SelectContent className="cursor-pointer">
+            <SelectItem  className="cursor-pointer" value="weekly">Weekly</SelectItem>
+            <SelectItem  className="cursor-pointer" value="monthly">Monthly</SelectItem>
           </SelectContent>
         </Select>
         <LineChart width={600} height={300} data={data}>

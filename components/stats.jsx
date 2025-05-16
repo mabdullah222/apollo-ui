@@ -23,8 +23,8 @@ export default function Stats() {
       {/* Premium Offer */}
       <Card className="bg-gray-100 p-4 text-center">
         <h3 className="font-bold">Learn even more!</h3>
-        <p className="text-gray-500 text-sm">Unlock premium features only for <strong>$9.99</strong> per month.</p>
-        <Button className="mt-2">Go Premium</Button>
+        <p className="text-gray-500 text-sm">Premium features only for <strong>$9.99</strong> per month. Available Soon.</p>
+        <Button className="mt-2 cursor-pointer">Go Premium</Button>
       </Card>
     </div>
   );
